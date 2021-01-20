@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.NewTimeTableFormController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="280.0" minWidth="10.0" prefWidth="101.0" />
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="503.0" minWidth="10.0" prefWidth="469.0" />
@@ -32,40 +32,50 @@
         <Label text="Date" GridPane.rowIndex="3" />
         <Label text="Start At" GridPane.rowIndex="4" />
         <Label text="End At" GridPane.rowIndex="5" />
-        <TextField GridPane.columnIndex="1" />
-        <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <DatePicker GridPane.columnIndex="1" GridPane.rowIndex="3" />
+        <TextField fx:id="activity" GridPane.columnIndex="1" />
+        <TextField fx:id="classroom" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <TextArea fx:id="description" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <DatePicker fx:id="date" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
          <children>
-            <Button cancelButton="true" mnemonicParsing="false" text="Cancel">
+            <Button fx:id="cancelNewTimetableFormButton" cancelButton="true" mnemonicParsing="false" onAction="#cancelNewTimetableForm" text="Cancel">
                <HBox.margin>
                   <Insets right="15.0" />
                </HBox.margin>
             </Button>
-            <Button mnemonicParsing="false" text="Save" />
+            <Button fx:id="saveNewTimetableFormButton" mnemonicParsing="false" onAction="#saveNewTimetableForm" text="Save" />
          </children>
       </HBox>
       <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
          <children>
-            <TextField prefHeight="27.0" prefWidth="44.0" promptText="16">
+            <TextField fx:id="startAtHour" prefHeight="27.0" prefWidth="44.0" promptText="16">
                <HBox.margin>
-                  <Insets right="5.0" />
+                  <Insets />
                </HBox.margin>
             </TextField>
-            <TextField prefHeight="27.0" prefWidth="44.0" promptText="30" />
+            <Label text=":">
+               <HBox.margin>
+                  <Insets left="3.0" right="3.0" />
+               </HBox.margin>
+            </Label>
+            <TextField fx:id="startAtMinute" prefHeight="27.0" prefWidth="44.0" promptText="30" />
          </children>
       </HBox>
       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="57.0" prefWidth="468.0">
                <children>
-                  <TextField prefHeight="27.0" prefWidth="44.0" promptText="17">
+                  <TextField fx:id="endAtHour" prefHeight="27.0" prefWidth="44.0" promptText="17">
                      <HBox.margin>
-                        <Insets right="5.0" />
+                        <Insets />
                      </HBox.margin>
                   </TextField>
-                  <TextField prefHeight="27.0" prefWidth="44.0" promptText="30" />
+                  <Label text=":">
+                     <HBox.margin>
+                        <Insets left="3.0" right="3.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="endAtMinute" prefHeight="27.0" prefWidth="44.0" promptText="30" />
                </children>
             </HBox>
          </children>
