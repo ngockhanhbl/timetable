@@ -5,11 +5,11 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.NewTimeTableFormController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <top>
       <HBox prefHeight="28.0" prefWidth="570.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="buttonAdd" mnemonicParsing="false" onAction="#btnAddClick" text="+ ADD">
+            <Button fx:id="addButton" mnemonicParsing="false" onAction="#addButtonClick" text="+ ADD">
                <HBox.margin>
                   <Insets />
                </HBox.margin>
