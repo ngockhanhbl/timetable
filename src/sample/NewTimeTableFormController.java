@@ -10,23 +10,48 @@ import javafx.event.ActionEvent;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 import javafx.scene.*;
 import javafx.stage.*;
 
 public class NewTimeTableFormController implements Initializable {
-    public Button cancelNewTimetableFormButton;
-    public Button saveNewTimetableFormButton;
-    public TextField activity;
-    public TextField classroom;
-    public TextArea description;
-    public DatePicker date;
-    public TextField startAtHour;
-    public TextField startAtMinute;
-    public TextField endAtHour;
-    public TextField endAtMinute;
+    @FXML
+    private Button cancelNewTimetableFormButton;
+
+    @FXML
+    private Button saveNewTimetableFormButton;
+
+    @FXML
+    private TextField activity;
+
+    @FXML
+    private TextField classroom;
+
+    @FXML
+    private TextArea description;
+
+    @FXML
+    private DatePicker date;
+
+    @FXML
+    private TextField startAtHour;
+
+    @FXML
+    private TextField startAtMinute;
+
+    @FXML
+    private TextField endAtHour;
+
+    @FXML
+    private TextField endAtMinute;
 
     public void cancelNewTimetableForm(ActionEvent e) throws IOException {
         System.out.println("run close");
@@ -38,7 +63,32 @@ public class NewTimeTableFormController implements Initializable {
         System.out.println("run save");
         boolean isValid = checkValidInput();
         if (isValid == true){
-            
+            System.out.println("Valid");
+            Connection connection = SqliteConnection.getInstance().getConnection();
+
+            String activityData = activity.getText();
+            String classroomData = classroom.getText();
+            String descriptionData = description.getText();
+            LocalDate dateData = date.getValue();
+            int startAtHourData = Integer.parseInt(startAtHour.getText());
+            int startAtMinuteData = Integer.parseInt(startAtMinute.getText());
+            int endAtHourData = Integer.parseInt(endAtHour.getText());
+            int endAtMinuteData = Integer.parseInt(endAtMinute.getText());
+
+
+            String mutation = "INSERT INTO timetable (activity, classroom, description, date, startAtHour, startAtMinute, endAtHour, endAtMinute)" + " VALUES('"+activityData+"', '"+classroomData+"','"+descriptionData+"','"+dateData+"', '"+startAtHourData+"', '"+startAtMinuteData+"', '"+endAtHourData+"', '"+endAtMinuteData+"' )";
+            try {
+                Statement statement = connection.createStatement();
+                int status = statement.executeUpdate(mutation);
+                if (status > 0){
+                    System.out.println("insert success");
+                    // clear input
+
+                    //show notification
+                }
+            }catch (Exception exception){
+                exception.printStackTrace();
+            }
         }
 
     }
