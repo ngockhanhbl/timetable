@@ -1,5 +1,6 @@
 package sample;
 
+import com.sun.javafx.runtime.VersionInfo;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,6 +18,9 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.centerOnScreen();
         primaryStage.show();
+
+//        System.out.println("JavaFX Version: " + System.getProperty("javafx.version"));
+//        System.out.println("JavaFX Runtime Version: " + System.getProperty("javafx.runtime.version"));
     }
 
 

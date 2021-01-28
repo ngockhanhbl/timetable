@@ -1,4 +1,6 @@
 package sample;
+import com.jfoenix.controls.JFXBadge;
+import com.jfoenix.controls.JFXSnackbar;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -20,7 +22,14 @@ import java.util.Date;
 import java.util.ResourceBundle;
 
 import javafx.scene.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.*;
+import javafx.util.Duration;
+import jfxtras.scene.control.agenda.Agenda;
+
+import static sample.Util.*;
 
 public class NewTimeTableFormController implements Initializable {
     @FXML
@@ -28,6 +37,9 @@ public class NewTimeTableFormController implements Initializable {
 
     @FXML
     private Button saveNewTimetableFormButton;
+
+    @FXML
+    private GridPane timetableFormRootPane;
 
     @FXML
     private TextField activity;
@@ -54,13 +66,11 @@ public class NewTimeTableFormController implements Initializable {
     private TextField endAtMinute;
 
     public void cancelNewTimetableForm(ActionEvent e) throws IOException {
-        System.out.println("run close");
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         stage.close();
     }
 
     public void saveNewTimetableForm(ActionEvent e) throws IOException {
-        System.out.println("run save");
         boolean isValid = checkValidInput();
         if (isValid == true){
             System.out.println("Valid");
@@ -80,11 +90,50 @@ public class NewTimeTableFormController implements Initializable {
             try {
                 Statement statement = connection.createStatement();
                 int status = statement.executeUpdate(mutation);
+                connection.close();
                 if (status > 0){
                     System.out.println("insert success");
                     // clear input
+                    clearInput();
 
-                    //show notification
+                    //show Snackbar
+                    showSnackbarSuccess(timetableFormRootPane, "Timetable successfully created");
+
+                    // add to agenda
+
+                    Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+
+                    System.out.println("stage.getScene().getRoot()");
+                    System.out.println(stage.getScene().getRoot());
+                    System.out.println(timetableFormRootPane.getScene());
+                    System.out.println(timetableFormRootPane.getScene().getWindow().getHeight());
+                    System.out.println(timetableFormRootPane.getScene().getWindow().getWidth());
+
+                    System.out.println(timetableFormRootPane.getHeight());
+                    System.out.println(timetableFormRootPane.getWidth());
+
+                    Stage stage2 = (Stage) timetableFormRootPane.getScene().getWindow();
+                    System.out.println(stage2);
+                    System.out.println("((Stage) timetableFormRootPane.getScene().getWindow()).getOwner()");
+                    System.out.println();
+
+                    Scene rootScene = ((Stage) timetableFormRootPane.getScene().getWindow()).getOwner().getScene();
+
+
+
+//                    Controller controller = new Controller();
+//                    controller.addNewTimetableToAgenda(
+//                            new Agenda.AppointmentImplLocal()
+//                                    .withStartLocalDateTime(dateData.atTime(startAtHourData, startAtMinuteData))
+//                                    .withEndLocalDateTime(dateData.atTime(endAtHourData, endAtMinuteData))
+//                                    .withSummary(activityData)
+//                                    .withDescription(descriptionData)
+//                                    .withLocation(classroomData)
+//                                    .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20)))
+//                    );
+
+
+
                 }
             }catch (Exception exception){
                 exception.printStackTrace();
@@ -93,21 +142,7 @@ public class NewTimeTableFormController implements Initializable {
 
     }
 
-    public boolean checkValidTime(String type, int time)  {
-        if (type == "hour"){
-            if (time >= 0 && time <= 24 ){
-                return true;
-            }else {
-                return false;
-            }
-        }else {
-            if (time >= 0 && time <= 59 ){
-                return true;
-            }else {
-                return false;
-            }
-        }
-    }
+
 
     public boolean checkValidInput()  {
         if(activity.getText().trim().isEmpty() == true){
@@ -194,24 +229,18 @@ public class NewTimeTableFormController implements Initializable {
         return true;
     }
 
-    private boolean isStartAtLessThanEndAt(int startAtHour, int startAtMinute, int endAtHour, int endAtMinute) {
-        LocalTime start = LocalTime.of(startAtHour, startAtMinute);
-        LocalTime end = LocalTime.of(endAtHour, endAtMinute);
-        if(end.compareTo(start) > 0) {
-            return true;
-        }else {
-            return false;
-        }
-    }
 
-    private void showAlertError(String header, String ErrorText) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Validate Error");
-        alert.setHeaderText(header);
-        alert.setContentText(ErrorText);
-        alert.showAndWait();
-    }
 
+    public void clearInput()  {
+        activity.clear();
+        classroom.clear();
+        description.clear();
+        date.setValue(null);
+        startAtHour.clear();
+        startAtMinute.clear();
+        endAtHour.clear();
+        endAtMinute.clear();
+    }
 
 
     @Override

@@ -1,3 +1,6 @@
-#button1 {
-    fx-background-color: rgba(0, 150, 150, 1);
+.jfx-snackbar-content {
+    -fx-background-color: #d5001c;
+	-fx-pref-height: 50px;
+	-fx-pref-width: 40px;
+	-fx-text-fill: WHITE;
 }

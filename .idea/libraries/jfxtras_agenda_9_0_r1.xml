@@ -1,0 +1,18 @@
+<component name="libraryTable">
+  <library name="jfxtras-agenda-9.0-r1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../jar_files/jfxtras-agenda-9.0-r1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../jar_files/jfxtras-all-9.0-r1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../jar_files/jfxtras-common-9.0-r1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../jar_files/jfxtras-controls-9.0-r1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../jar_files/jfxtras-font-roboto-9.0-r1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../jar_files/jfxtras-fxml-9.0-r1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../jar_files/jfxtras-gauge-linear-9.0-r1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../jar_files/jfxtras-icalendaragenda-9.0-r1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../jar_files/jfxtras-icalendarfx-9.0-r1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../jar_files/jfxtras-menu-9.0-r1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
