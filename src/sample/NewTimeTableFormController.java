@@ -18,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.Temporal;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -71,7 +72,15 @@ public class NewTimeTableFormController implements Initializable {
     }
 
     public void saveNewTimetableForm(ActionEvent e) throws IOException {
-        boolean isValid = checkValidInput();
+        boolean isValid = checkValidInput(
+                activity.getText(),
+                classroom.getText(),
+                date.getValue(),
+                startAtHour.getText(),
+                startAtMinute.getText(),
+                endAtHour.getText(),
+                endAtMinute.getText()
+        );
         if (isValid == true){
             System.out.println("Valid");
             Connection connection = SqliteConnection.getInstance().getConnection();
@@ -101,39 +110,32 @@ public class NewTimeTableFormController implements Initializable {
 
                     // add to agenda
 
-                    Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-
-                    System.out.println("stage.getScene().getRoot()");
-                    System.out.println(stage.getScene().getRoot());
-                    System.out.println(timetableFormRootPane.getScene());
-                    System.out.println(timetableFormRootPane.getScene().getWindow().getHeight());
-                    System.out.println(timetableFormRootPane.getScene().getWindow().getWidth());
-
-                    System.out.println(timetableFormRootPane.getHeight());
-                    System.out.println(timetableFormRootPane.getWidth());
-
-                    Stage stage2 = (Stage) timetableFormRootPane.getScene().getWindow();
-                    System.out.println(stage2);
-                    System.out.println("((Stage) timetableFormRootPane.getScene().getWindow()).getOwner()");
-                    System.out.println();
-
-                    Scene rootScene = ((Stage) timetableFormRootPane.getScene().getWindow()).getOwner().getScene();
+                    System.out.println("status");
+                    System.out.println(status);
 
 
+                    FXMLLoader fxmlLoader = new FXMLLoader();
+                    fxmlLoader.setLocation(getClass().getResource("sample.fxml"));
+                    Parent rootPane = fxmlLoader.load();
+                    Controller controller = fxmlLoader.getController();
+                    Agenda agenda = (Agenda) controller.getRootPane().getCenter();
+                    System.out.println(agenda.appointments().stream().sorted());
+                    agenda.appointments().addAll(
+                            new Agenda.AppointmentImplLocal()
+                                    .withStartLocalDateTime(LocalDate.now().atTime(4, 00))
+                                    .withEndLocalDateTime(LocalDate.now().atTime(5, 30))
+                                    .withSummary("TEST Ne")
+                                    .withDescription("It's time")
+                                    .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group1"))
 
-//                    Controller controller = new Controller();
-//                    controller.addNewTimetableToAgenda(
 //                            new Agenda.AppointmentImplLocal()
-//                                    .withStartLocalDateTime(dateData.atTime(startAtHourData, startAtMinuteData))
-//                                    .withEndLocalDateTime(dateData.atTime(endAtHourData, endAtMinuteData))
-//                                    .withSummary(activityData)
-//                                    .withDescription(descriptionData)
-//                                    .withLocation(classroomData)
-//                                    .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20)))
-//                    );
-
-
-
+//                                    .withStartLocalDateTime(date.getValue().atTime(Integer.valueOf(startAtHour.getText()), Integer.valueOf(startAtMinute.getText())))
+//                                    .withEndLocalDateTime(date.getValue().atTime(Integer.valueOf(endAtHour.getText()), Integer.valueOf(endAtMinute.getText())))
+//                                    .withSummary(activity.getText())
+//                                    .withDescription(description.getText())
+//                                    .withLocation(classroom.getText())
+//                                    .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20)).withDescription("100"))
+                    );
                 }
             }catch (Exception exception){
                 exception.printStackTrace();
@@ -141,95 +143,6 @@ public class NewTimeTableFormController implements Initializable {
         }
 
     }
-
-
-
-    public boolean checkValidInput()  {
-        if(activity.getText().trim().isEmpty() == true){
-            showAlertError("Empty activity", "Please enter your activity !");
-            return false;
-        }else if(classroom.getText().trim().isEmpty() == true){
-            showAlertError("Empty classroom", "Please enter your classroom !");
-            return false;
-        }else if(date.getValue() == null){
-            showAlertError("Empty date", "Please enter your date !");
-            return false;
-        }else if(startAtHour.getText().trim().isEmpty() == true){
-            showAlertError("Empty Start at hour", "Please enter your start-at-hour !");
-            return false;
-        }else if(startAtMinute.getText().trim().isEmpty() == true){
-            showAlertError("Empty Start at minute", "Please enter your start-at-minute !");
-            return false;
-        }else if(endAtHour.getText().trim().isEmpty() == true){
-            showAlertError("Empty End at hour", "Please enter your end-at-hour !");
-            return false;
-        }else if(endAtMinute.getText().trim().isEmpty() == true){
-            showAlertError("Empty End at minute", "Please enter your end-at-minute !");
-            return false;
-        }
-
-        int startAtHourParse;
-        try {
-            startAtHourParse = Integer.parseInt(startAtHour.getText());
-        }catch (NumberFormatException e){
-            showAlertError("Number Format Exception", "Start at hour is not number !");
-            System.out.println("error parse");
-            return false;
-        }
-        boolean isValidStartAtHourParse = checkValidTime("hour", startAtHourParse);
-        if (isValidStartAtHourParse == false){
-            showAlertError("Hour Format Exception", "Start at hour is must be between 0 and 24 !");
-            return false;
-        }
-
-        int startAtMinuteParse;
-        try {
-            startAtMinuteParse = Integer.parseInt(startAtMinute.getText());
-        }catch (NumberFormatException e){
-            showAlertError("Number Format Exception", "Start at minute is not number !");
-            return false;
-        }
-        boolean isValidStartAtMinuteParse = checkValidTime("minute", startAtMinuteParse);
-        if (isValidStartAtMinuteParse == false){
-            showAlertError("Minute Format Exception", "Start at minute is must be between 0 and 59 !");
-            return false;
-        }
-
-        int endAtHourParse;
-        try {
-            endAtHourParse = Integer.parseInt(endAtHour.getText());
-        }catch (NumberFormatException e){
-            showAlertError("Number Format Exception", "End at hour is not number !");
-            return false;
-        }
-        boolean isValidEndAtHourParse = checkValidTime("hour", endAtHourParse);
-        if (isValidEndAtHourParse == false){
-            showAlertError("Hour Format Exception", "End at hour is must be between 0 and 24 !");
-            return false;
-        }
-
-        int endAtMinuteParse;
-        try {
-            endAtMinuteParse = Integer.parseInt(endAtMinute.getText());
-        }catch (NumberFormatException e){
-            showAlertError("Number Format Exception", "End at minute is not number !");
-            return false;
-        }
-        boolean isValidEndAtMinuteParse = checkValidTime("minute", endAtMinuteParse);
-        if (isValidEndAtMinuteParse == false){
-            showAlertError("Minute Format Exception", "End at minute is must be between 0 and 59 !");
-            return false;
-        }
-
-        boolean isValidStartAtLessThanEndAt = isStartAtLessThanEndAt(startAtHourParse, startAtMinuteParse, endAtHourParse, endAtMinuteParse);
-        if (isValidStartAtLessThanEndAt == false){
-            showAlertError("Error Time", "Start Time should be greater than end time");
-            return false;
-        }
-        return true;
-    }
-
-
 
     public void clearInput()  {
         activity.clear();

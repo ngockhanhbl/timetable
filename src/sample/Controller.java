@@ -9,11 +9,16 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Skin;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jfxtras.icalendarfx.VCalendar;
+import jfxtras.scene.control.CalendarPicker;
 import jfxtras.scene.control.agenda.Agenda;
 import jfxtras.scene.control.agenda.icalendar.ICalendarAgenda;
 
@@ -22,10 +27,9 @@ import java.net.URL;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import static sample.Util.*;
@@ -53,6 +57,7 @@ public class Controller implements Initializable {
 
 
     }
+
     public void loadDataButtonClick(ActionEvent e) throws IOException {
         Agenda agenda = (Agenda) rootPane.getCenter();
         List<String> WeekDateList = getListOfWeek(agenda.getDisplayedLocalDateTime());
@@ -69,7 +74,6 @@ public class Controller implements Initializable {
             LocalDate date = LocalDate.parse(item.getDate().toString());
             agenda.appointments().addAll(
                     new Agenda.AppointmentImplLocal()
-
                             .withStartLocalDateTime(date.atTime(item.getStartAtHour(), item.getStartAtMinute()))
                             .withEndLocalDateTime(date.atTime(item.getEndAtHour(), item.getEndAtMinute()))
                             .withSummary(item.getActivity())
@@ -79,20 +83,20 @@ public class Controller implements Initializable {
             );
         }
 
-
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        CalendarPicker calendarPicker = new CalendarPicker();
         Agenda agenda = new Agenda();
         agenda.setAllowDragging(false);
         rootPane.setCenter(agenda);
-
-        List<String> WeekDateList = getListOfWeek(agenda.getDisplayedLocalDateTime());
+        rootPane.setRight(calendarPicker);
+        List<String> weekDateList = getListOfWeek(agenda.getDisplayedLocalDateTime());
         List<Timetable> timetableList = null;
 
         try {
-            timetableList = queryTimetableByWeekDateList(WeekDateList);
+            timetableList = queryTimetableByWeekDateList(weekDateList);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
@@ -110,14 +114,12 @@ public class Controller implements Initializable {
                             .withSummary(item.getActivity())
                             .withDescription(item.getDescription())
                             .withLocation(item.getClassroom())
-                            .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20))) // you should use a map of AppointmentGroups
+                            .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20)).withDescription(String.valueOf(item.getId())))
             );
         }
 
         agenda.setActionCallback((appointment -> {
-            // truyền được data sang bên kia
             Stage stage = (Stage) rootPane.getScene().getWindow();
-
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("detailed_timetable.fxml"));
             Parent detailedTimetableParent = null;
@@ -135,9 +137,6 @@ public class Controller implements Initializable {
                 Timetable selected = parseAppointmentToTimetable(appointment);
                 detailedTimetableController.setTimetable(selected);
 
-                System.out.println("detailedTimetableController");
-                System.out.println(detailedTimetableController);
-
                 Scene scene = new Scene(detailedTimetableParent);
                 Stage dialog = new Stage();
                 dialog.setScene(scene);
@@ -149,8 +148,67 @@ public class Controller implements Initializable {
             return null;
         }));
 
+        calendarPicker.withValueValidationCallback((calendarRange -> {
+//            Skin skin = AgendaWeekSkin();
+            Date date = calendarRange.getTime();
+            LocalDateTime localDateTime = LocalDateTime.ofInstant(date.toInstant(),
+                    ZoneId.systemDefault());
+            agenda.setDisplayedLocalDateTime(localDateTime);
+            List<Timetable> _timetableList = null;
+
+            List<String> _weekDateList = getListOfWeek(agenda.getDisplayedLocalDateTime());
+            try {
+                _timetableList = queryTimetableByWeekDateList(_weekDateList);
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
+            }
+
+            agenda.appointments().removeAll(agenda.appointments());
+            for (Timetable item : _timetableList) {
+                LocalDate _date = LocalDate.parse(item.getDate().toString());
+                agenda.appointments().addAll(
+                        new Agenda.AppointmentImplLocal()
+                                .withStartLocalDateTime(_date.atTime(item.getStartAtHour(), item.getStartAtMinute()))
+                                .withEndLocalDateTime(_date.atTime(item.getEndAtHour(), item.getEndAtMinute()))
+                                .withSummary(item.getActivity())
+                                .withDescription(item.getDescription())
+                                .withLocation(item.getClassroom())
+                                .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20)).withDescription(String.valueOf(item.getId())))
+                );
+            }
+
+            agenda.setActionCallback((appointment -> {
+                Stage stage = (Stage) rootPane.getScene().getWindow();
+                FXMLLoader fxmlLoader = new FXMLLoader();
+                fxmlLoader.setLocation(getClass().getResource("detailed_timetable.fxml"));
+                Parent detailedTimetableParent = null;
+
+                try {
+                    detailedTimetableParent = fxmlLoader.load();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
 
+                if (detailedTimetableParent != null){
+                    //set Data to  detailed timetable view
+                    DetailedTimetableController detailedTimetableController = fxmlLoader.getController();
+                    Timetable selected = parseAppointmentToTimetable(appointment);
+                    detailedTimetableController.setTimetable(selected);
+
+                    Scene scene = new Scene(detailedTimetableParent);
+                    Stage dialog = new Stage();
+                    dialog.setScene(scene);
+                    dialog.setTitle("Detailed Timetable");
+                    dialog.initOwner(stage);
+                    dialog.initModality(Modality.APPLICATION_MODAL);
+                    dialog.showAndWait();
+                }
+                return null;
+            }));
+
+            return true;
+        }));
 
     }
     public List<Timetable> queryTimetableByWeekDateList( List<String> WeekDateList) throws SQLException {

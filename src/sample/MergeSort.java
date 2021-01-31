@@ -22,17 +22,14 @@ public class MergeSort
             L[i] = arr.get(l + i);
         for (int j = 0; j < lengthOfN2; ++j)
             R[j] = arr.get(m + 1 + j);
-        System.out.println("XXX");
 
         for (Timetable i : L) {
             System.out.println(i.getDate());
         }
-        System.out.println("---");
 
         for (Timetable i : R) {
             System.out.println(i.getDate());
         }
-        System.out.println("YYY");
 
         /* Merge the temp arrays */
 
@@ -66,13 +63,6 @@ public class MergeSort
             j++;
             k++;
         }
-
-        System.out.println("RESULT");
-
-        for (Timetable x : arr) {
-            System.out.println(x.getDate());
-        }
-
 
     }
 

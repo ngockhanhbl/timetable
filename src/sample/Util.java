@@ -129,8 +129,15 @@ public class Util {
     }
 
     public static Timetable parseAppointmentToTimetable(Agenda.Appointment appointment) {
+        int id = -1;
+        String idString = appointment.getAppointmentGroup().getDescription();
+        try {
+            id = Integer.valueOf(idString);
+        }catch (Exception e) {
+            id = -1;
+        }
         Timetable timetable = new Timetable(
-                1,
+                id,
                 appointment.getSummary(),
                 appointment.getLocation(),
                 appointment.getDescription(),
@@ -143,11 +150,90 @@ public class Util {
         return timetable;
     }
 
-//    LocalDate date,
-//    int startAtHour,
-//    int startAtMinute,
-//    int endAtHour,
-//    int endAtMinute
+    public static boolean checkValidInput(String activity, String classroom, LocalDate date, String startAtHour, String startAtMinute, String endAtHour, String endAtMinute)  {
+        if(activity.trim().isEmpty() == true){
+            showAlertError("Empty activity", "Please enter your activity !");
+            return false;
+        }else if(classroom.trim().isEmpty() == true){
+            showAlertError("Empty classroom", "Please enter your classroom !");
+            return false;
+        }else if(date == null){
+            showAlertError("Empty date", "Please enter your date !");
+            return false;
+        }else if(startAtHour.trim().isEmpty() == true){
+            showAlertError("Empty Start at hour", "Please enter your start-at-hour !");
+            return false;
+        }else if(startAtMinute.trim().isEmpty() == true){
+            showAlertError("Empty Start at minute", "Please enter your start-at-minute !");
+            return false;
+        }else if(endAtHour.trim().isEmpty() == true){
+            showAlertError("Empty End at hour", "Please enter your end-at-hour !");
+            return false;
+        }else if(endAtMinute.trim().isEmpty() == true){
+            showAlertError("Empty End at minute", "Please enter your end-at-minute !");
+            return false;
+        }
+
+        int startAtHourParse;
+        try {
+            startAtHourParse = Integer.parseInt(startAtHour);
+        }catch (NumberFormatException e){
+            showAlertError("Number Format Exception", "Start at hour is not number !");
+            System.out.println("error parse");
+            return false;
+        }
+        boolean isValidStartAtHourParse = checkValidTime("hour", startAtHourParse);
+        if (isValidStartAtHourParse == false){
+            showAlertError("Hour Format Exception", "Start at hour is must be between 0 and 24 !");
+            return false;
+        }
+
+        int startAtMinuteParse;
+        try {
+            startAtMinuteParse = Integer.parseInt(startAtMinute);
+        }catch (NumberFormatException e){
+            showAlertError("Number Format Exception", "Start at minute is not number !");
+            return false;
+        }
+        boolean isValidStartAtMinuteParse = checkValidTime("minute", startAtMinuteParse);
+        if (isValidStartAtMinuteParse == false){
+            showAlertError("Minute Format Exception", "Start at minute is must be between 0 and 59 !");
+            return false;
+        }
+
+        int endAtHourParse;
+        try {
+            endAtHourParse = Integer.parseInt(endAtHour);
+        }catch (NumberFormatException e){
+            showAlertError("Number Format Exception", "End at hour is not number !");
+            return false;
+        }
+        boolean isValidEndAtHourParse = checkValidTime("hour", endAtHourParse);
+        if (isValidEndAtHourParse == false){
+            showAlertError("Hour Format Exception", "End at hour is must be between 0 and 24 !");
+            return false;
+        }
+
+        int endAtMinuteParse;
+        try {
+            endAtMinuteParse = Integer.parseInt(endAtMinute);
+        }catch (NumberFormatException e){
+            showAlertError("Number Format Exception", "End at minute is not number !");
+            return false;
+        }
+        boolean isValidEndAtMinuteParse = checkValidTime("minute", endAtMinuteParse);
+        if (isValidEndAtMinuteParse == false){
+            showAlertError("Minute Format Exception", "End at minute is must be between 0 and 59 !");
+            return false;
+        }
+
+        boolean isValidStartAtLessThanEndAt = isStartAtLessThanEndAt(startAtHourParse, startAtMinuteParse, endAtHourParse, endAtMinuteParse);
+        if (isValidStartAtLessThanEndAt == false){
+            showAlertError("Error Time", "Start Time should be greater than end time");
+            return false;
+        }
+        return true;
+    }
 
 
 }

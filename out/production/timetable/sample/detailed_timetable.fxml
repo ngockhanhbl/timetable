@@ -46,7 +46,7 @@
                     </HBox.margin>
                 </Button>
                 <JFXButton fx:id="updateDetailedTimetableButton" buttonType="RAISED" onAction="#updateDetailedTimetableButtonClick" style="-fx-background-color: #0d6efd#0d6efd;" text="Update" textFill="WHITE" />
-            <JFXButton fx:id="deleteDetailedTimetableButton" onAction="#deleteDetailedTimetableButtonClick" style="-fx-background-color: #ff2800#ff2800;" text="Delete" textFill="WHITE">
+            <JFXButton fx:id="deleteDetailedTimetableButton" buttonType="FLAT" onAction="#deleteDetailedTimetableButtonClick" style="-fx-background-color: #ff2800#ff2800;" text="Delete" textFill="WHITE">
                <HBox.margin>
                   <Insets left="15.0" />
                </HBox.margin>
