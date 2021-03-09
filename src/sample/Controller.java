@@ -54,8 +54,6 @@ public class Controller implements Initializable {
         dialog.initOwner(stage);
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.showAndWait();
-
-
     }
 
     public void loadDataButtonClick(ActionEvent e) throws IOException {
