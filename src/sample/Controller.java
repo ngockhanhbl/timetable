@@ -9,14 +9,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Skin;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import jfxtras.icalendarfx.VCalendar;
 import jfxtras.scene.control.CalendarPicker;
 import jfxtras.scene.control.agenda.Agenda;
@@ -33,6 +31,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import static sample.Util.*;
+import static sample.Util.getListOfWeek;
 
 public class Controller implements Initializable {
     public Button addButton;
@@ -74,7 +73,7 @@ public class Controller implements Initializable {
                     new Agenda.AppointmentImplLocal()
                             .withStartLocalDateTime(date.atTime(item.getStartAtHour(), item.getStartAtMinute()))
                             .withEndLocalDateTime(date.atTime(item.getEndAtHour(), item.getEndAtMinute()))
-                            .withSummary(item.getActivity())
+                            .withSummary(item.getSubjectId().getName())
                             .withDescription(item.getDescription())
                             .withLocation(item.getClassroom())
                             .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20))) // you should use a map of AppointmentGroups
@@ -92,7 +91,6 @@ public class Controller implements Initializable {
         rootPane.setRight(calendarPicker);
         List<String> weekDateList = getListOfWeek(agenda.getDisplayedLocalDateTime());
         List<Timetable> timetableList = null;
-
         try {
             timetableList = queryTimetableByWeekDateList(weekDateList);
         } catch (SQLException throwable) {
@@ -109,7 +107,7 @@ public class Controller implements Initializable {
                     new Agenda.AppointmentImplLocal()
                             .withStartLocalDateTime(date.atTime(item.getStartAtHour(), item.getStartAtMinute()))
                             .withEndLocalDateTime(date.atTime(item.getEndAtHour(), item.getEndAtMinute()))
-                            .withSummary(item.getActivity())
+                            .withSummary(item.getSubjectId().getName())
                             .withDescription(item.getDescription())
                             .withLocation(item.getClassroom())
                             .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20)).withDescription(String.valueOf(item.getId())))
@@ -128,11 +126,19 @@ public class Controller implements Initializable {
                 e.printStackTrace();
             }
 
-
             if (detailedTimetableParent != null){
                 //set Data to  detailed timetable view
                 DetailedTimetableController detailedTimetableController = fxmlLoader.getController();
-                Timetable selected = parseAppointmentToTimetable(appointment);
+                Timetable selected = null;
+                try {
+                    selected = parseAppointmentToTimetable(appointment);
+                } catch (SQLException throwables) {
+                    System.out.println("throwables");
+                    throwables.printStackTrace();
+                }
+                System.out.println("selected");
+                System.out.println(selected);
+
                 detailedTimetableController.setTimetable(selected);
 
                 Scene scene = new Scene(detailedTimetableParent);
@@ -168,7 +174,7 @@ public class Controller implements Initializable {
                         new Agenda.AppointmentImplLocal()
                                 .withStartLocalDateTime(_date.atTime(item.getStartAtHour(), item.getStartAtMinute()))
                                 .withEndLocalDateTime(_date.atTime(item.getEndAtHour(), item.getEndAtMinute()))
-                                .withSummary(item.getActivity())
+                                .withSummary(item.getSubjectId().getName())
                                 .withDescription(item.getDescription())
                                 .withLocation(item.getClassroom())
                                 .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20)).withDescription(String.valueOf(item.getId())))
@@ -191,7 +197,12 @@ public class Controller implements Initializable {
                 if (detailedTimetableParent != null){
                     //set Data to  detailed timetable view
                     DetailedTimetableController detailedTimetableController = fxmlLoader.getController();
-                    Timetable selected = parseAppointmentToTimetable(appointment);
+                    Timetable selected = null;
+                    try {
+                        selected = parseAppointmentToTimetable(appointment);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
                     detailedTimetableController.setTimetable(selected);
 
                     Scene scene = new Scene(detailedTimetableParent);
@@ -209,22 +220,36 @@ public class Controller implements Initializable {
         }));
 
     }
+
     public List<Timetable> queryTimetableByWeekDateList( List<String> WeekDateList) throws SQLException {
         List<Timetable> timetableList = FXCollections.observableArrayList();
 
         PreparedStatement preparedStatement;
         ResultSet resultSet;
-        var sql = String.format("SELECT * FROM timetable WHERE date IN (%s)",
+        var sql = String.format(
+//                "SELECT * FROM timetable  WHERE date IN (%s)",
+
+                "SELECT timetable.*, subject.*\n" +
+                        "FROM timetable\n" +
+                        "JOIN subject ON subject.id = timetable.subjectId \n" +
+                        "where date IN (%s)",
+
                 WeekDateList.stream()
                         .collect(Collectors.joining(", ")));
+
+        System.out.println(sql);
+
+
         Connection connection = SqliteConnection.getInstance().getConnection();
         preparedStatement = connection.prepareStatement(sql);
         resultSet = preparedStatement.executeQuery();
-
         while (resultSet.next()){
             Timetable newTimeTable = new Timetable(
                     Integer.parseInt(resultSet.getString(1)),
-                    resultSet.getString(2),
+                    new SubjectModel(
+                            resultSet.getInt(10),
+                            resultSet.getString(11)
+                    ),
                     resultSet.getString(3),
                     resultSet.getString(4),
                     LocalDate.parse(resultSet.getString(5)),
@@ -233,6 +258,7 @@ public class Controller implements Initializable {
                     resultSet.getInt(8),
                     resultSet.getInt(9)
             );
+
             timetableList.add(newTimeTable);
         }
 
@@ -249,3 +275,7 @@ public class Controller implements Initializable {
     }
 
 }
+
+
+
+

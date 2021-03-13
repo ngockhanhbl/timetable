@@ -1,12 +1,17 @@
 package sample;
 
 import com.jfoenix.controls.JFXSnackbar;
+import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import jfxtras.scene.control.agenda.Agenda;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,7 +30,7 @@ public class Util {
 
     public static boolean checkValidTime(String type, int time) {
         if (type == "hour"){
-            if (time >= 0 && time <= 24 ){
+            if (time >= 0 && time <= 23 ){
                 return true;
             }else {
                 return false;
@@ -128,7 +133,12 @@ public class Util {
         return dateList;
     }
 
-    public static Timetable parseAppointmentToTimetable(Agenda.Appointment appointment) {
+    public static Timetable parseAppointmentToTimetable(Agenda.Appointment appointment) throws SQLException {
+        var subjects = getSubjects();
+        SubjectModel subject = null;
+        for(var sub: subjects){
+            if ( sub.getName().equals(appointment.getSummary())) subject = sub;
+        }
         int id = -1;
         String idString = appointment.getAppointmentGroup().getDescription();
         try {
@@ -136,9 +146,15 @@ public class Util {
         }catch (Exception e) {
             id = -1;
         }
+        System.out.println("id");
+
+
+        System.out.println("subject");
+        System.out.println(subject);
+
         Timetable timetable = new Timetable(
                 id,
-                appointment.getSummary(),
+                subject,
                 appointment.getLocation(),
                 appointment.getDescription(),
                 appointment.getStartLocalDateTime().toLocalDate(),
@@ -147,6 +163,8 @@ public class Util {
                 appointment.getEndLocalDateTime().getHour(),
                 appointment.getEndLocalDateTime().getMinute()
         );
+
+
         return timetable;
     }
 
@@ -184,7 +202,7 @@ public class Util {
         }
         boolean isValidStartAtHourParse = checkValidTime("hour", startAtHourParse);
         if (isValidStartAtHourParse == false){
-            showAlertError("Hour Format Exception", "Start at hour is must be between 0 and 24 !");
+            showAlertError("Hour Format Exception", "Start at hour is must be between 0 and 23 !");
             return false;
         }
 
@@ -233,6 +251,29 @@ public class Util {
             return false;
         }
         return true;
+    }
+
+
+    public static List<SubjectModel> getSubjects() throws SQLException {
+        List<SubjectModel> subjectModelList = FXCollections.observableArrayList();
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+        var sql = String.format("SELECT * FROM subject");
+        Connection connection = SqliteConnection.getInstance().getConnection();
+        preparedStatement = connection.prepareStatement(sql);
+
+        resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()){
+            SubjectModel newSubject = new SubjectModel(
+                    Integer.parseInt(resultSet.getString(1)),
+                    resultSet.getString(2)
+            );
+            subjectModelList.add(newSubject);
+        }
+
+        return subjectModelList;
     }
 
 

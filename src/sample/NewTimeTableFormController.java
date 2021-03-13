@@ -1,9 +1,10 @@
 package sample;
-import com.jfoenix.controls.JFXBadge;
-import com.jfoenix.controls.JFXSnackbar;
+
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 
@@ -12,23 +13,39 @@ import javafx.event.ActionEvent;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.temporal.Temporal;
-import java.util.Date;
+
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.scene.*;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.HBox;
 import javafx.stage.*;
-import javafx.util.Duration;
+import javafx.util.StringConverter;
 import jfxtras.scene.control.agenda.Agenda;
+
+
+
+import javafx.collections.FXCollections;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import jfxtras.scene.control.CalendarPicker;
+import jfxtras.scene.control.agenda.Agenda;
+
+import java.io.IOException;
+import java.net.URL;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.Date;
+import java.util.stream.Collectors;
 
 import static sample.Util.*;
 
@@ -42,8 +59,10 @@ public class NewTimeTableFormController implements Initializable {
     @FXML
     private GridPane timetableFormRootPane;
 
+    ComboBox<SubjectModel> comboBox = new ComboBox<>();
+
     @FXML
-    private TextField activity;
+    private ComboBox<SubjectModel> subjectId;
 
     @FXML
     private TextField classroom;
@@ -73,7 +92,7 @@ public class NewTimeTableFormController implements Initializable {
 
     public void saveNewTimetableForm(ActionEvent e) throws IOException {
         boolean isValid = checkValidInput(
-                activity.getText(),
+                comboBox.getSelectionModel().getSelectedItem().getName(),
                 classroom.getText(),
                 date.getValue(),
                 startAtHour.getText(),
@@ -81,11 +100,11 @@ public class NewTimeTableFormController implements Initializable {
                 endAtHour.getText(),
                 endAtMinute.getText()
         );
+
         if (isValid == true){
             System.out.println("Valid");
             Connection connection = SqliteConnection.getInstance().getConnection();
-
-            String activityData = activity.getText();
+            int activityData = comboBox.getSelectionModel().getSelectedItem().getId();
             String classroomData = classroom.getText();
             String descriptionData = description.getText();
             LocalDate dateData = date.getValue();
@@ -95,7 +114,8 @@ public class NewTimeTableFormController implements Initializable {
             int endAtMinuteData = Integer.parseInt(endAtMinute.getText());
 
 
-            String mutation = "INSERT INTO timetable (activity, classroom, description, date, startAtHour, startAtMinute, endAtHour, endAtMinute)" + " VALUES('"+activityData+"', '"+classroomData+"','"+descriptionData+"','"+dateData+"', '"+startAtHourData+"', '"+startAtMinuteData+"', '"+endAtHourData+"', '"+endAtMinuteData+"' )";
+            String mutation = "INSERT INTO timetable (subjectId, classroom, description, date, startAtHour, startAtMinute, endAtHour, endAtMinute)" + " VALUES('"+activityData+"', '"+classroomData+"','"+descriptionData+"','"+dateData+"', '"+startAtHourData+"', '"+startAtMinuteData+"', '"+endAtHourData+"', '"+endAtMinuteData+"' )";
+            System.out.println(mutation);
             try {
                 Statement statement = connection.createStatement();
                 int status = statement.executeUpdate(mutation);
@@ -110,32 +130,28 @@ public class NewTimeTableFormController implements Initializable {
 
                     // add to agenda
 
-                    System.out.println("status");
-                    System.out.println(status);
-
-
-                    FXMLLoader fxmlLoader = new FXMLLoader();
-                    fxmlLoader.setLocation(getClass().getResource("sample.fxml"));
-                    Parent rootPane = fxmlLoader.load();
-                    Controller controller = fxmlLoader.getController();
-                    Agenda agenda = (Agenda) controller.getRootPane().getCenter();
-                    System.out.println(agenda.appointments().stream().sorted());
-                    agenda.appointments().addAll(
-                            new Agenda.AppointmentImplLocal()
-                                    .withStartLocalDateTime(LocalDate.now().atTime(4, 00))
-                                    .withEndLocalDateTime(LocalDate.now().atTime(5, 30))
-                                    .withSummary("TEST Ne")
-                                    .withDescription("It's time")
-                                    .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group1"))
-
+//                    FXMLLoader fxmlLoader = new FXMLLoader();
+//                    fxmlLoader.setLocation(getClass().getResource("sample.fxml"));
+//                    Parent rootPane = fxmlLoader.load();
+//                    Controller controller = fxmlLoader.getController();
+//                    Agenda agenda = (Agenda) controller.getRootPane().getCenter();
+//                    System.out.println(agenda.appointments().stream().sorted());
+//                    agenda.appointments().addAll(
 //                            new Agenda.AppointmentImplLocal()
-//                                    .withStartLocalDateTime(date.getValue().atTime(Integer.valueOf(startAtHour.getText()), Integer.valueOf(startAtMinute.getText())))
-//                                    .withEndLocalDateTime(date.getValue().atTime(Integer.valueOf(endAtHour.getText()), Integer.valueOf(endAtMinute.getText())))
-//                                    .withSummary(activity.getText())
-//                                    .withDescription(description.getText())
-//                                    .withLocation(classroom.getText())
-//                                    .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20)).withDescription("100"))
-                    );
+//                                    .withStartLocalDateTime(LocalDate.now().atTime(4, 00))
+//                                    .withEndLocalDateTime(LocalDate.now().atTime(5, 30))
+//                                    .withSummary("TEST Ne")
+//                                    .withDescription("It's time")
+//                                    .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group1"))
+//
+////                            new Agenda.AppointmentImplLocal()
+////                                    .withStartLocalDateTime(date.getValue().atTime(Integer.valueOf(startAtHour.getText()), Integer.valueOf(startAtMinute.getText())))
+////                                    .withEndLocalDateTime(date.getValue().atTime(Integer.valueOf(endAtHour.getText()), Integer.valueOf(endAtMinute.getText())))
+////                                    .withSummary(activity.getText())
+////                                    .withDescription(description.getText())
+////                                    .withLocation(classroom.getText())
+////                                    .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20)).withDescription("100"))
+//                    );
                 }
             }catch (Exception exception){
                 exception.printStackTrace();
@@ -145,7 +161,6 @@ public class NewTimeTableFormController implements Initializable {
     }
 
     public void clearInput()  {
-        activity.clear();
         classroom.clear();
         description.clear();
         date.setValue(null);
@@ -155,9 +170,49 @@ public class NewTimeTableFormController implements Initializable {
         endAtMinute.clear();
     }
 
+//            subjectId.getItems().addAll(FXCollections.observableArrayList(new SubjectModel(1, "HAHA")));
 
+//            for (SubjectModel x : list){
+//        System.out.println(x.getName());
+//    }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        setSubjectToForm();
     }
+
+    public void setSubjectToForm(){
+        try {
+            ObservableList<SubjectModel> list = FXCollections.observableArrayList();
+            var data = getSubjects();
+            list.addAll(data);
+
+
+            StringConverter<SubjectModel> converter = new StringConverter<SubjectModel>() {
+                @Override
+                public String toString(SubjectModel object) {
+                    return object.getName();
+                }
+
+                @Override
+                public SubjectModel fromString(String string) {
+                    return comboBox.getItems().stream().filter(ap ->
+                            ap.getName().equals(string)).findFirst().orElse(null);
+//                return subjectId.getSelectionModel().getSelectedItem();
+                }
+            };
+            comboBox.setConverter(converter);
+            comboBox.setItems(list);
+            comboBox.getSelectionModel().selectFirst();
+
+            timetableFormRootPane.add(comboBox, 1, 0);
+
+            comboBox.valueProperty().addListener((obs, oldVal, newVal) ->
+                    System.out.println("newVal " + newVal.getName() ));
+
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+    }
+
+
 }

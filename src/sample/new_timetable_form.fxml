@@ -34,7 +34,6 @@
         <Label text="Date" GridPane.rowIndex="3" />
         <Label text="Start At" GridPane.rowIndex="4" />
         <Label text="End At" GridPane.rowIndex="5" />
-        <TextField fx:id="activity" GridPane.columnIndex="1" />
         <TextField fx:id="classroom" GridPane.columnIndex="1" GridPane.rowIndex="1" />
         <TextArea fx:id="description" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
         <DatePicker fx:id="date" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
@@ -83,6 +82,7 @@
             </HBox>
          </children>
       </HBox>
+      <HBox fx:id="hBox10" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" />
     </children>
    <padding>
       <Insets left="15.0" right="15.0" />

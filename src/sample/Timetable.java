@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 public class Timetable {
     private int id;
-    private String activity;
+    private SubjectModel subjectId;
     private String classroom;
     private String description;
     private LocalDate date;
@@ -22,8 +22,8 @@ public class Timetable {
         this.id = id;
     }
 
-    public void setActivity(String activity) {
-        this.activity = activity;
+    public void setActivity(SubjectModel subjectId) {
+        this.subjectId = subjectId;
     }
 
     public void setClassroom(String classroom) {
@@ -58,9 +58,6 @@ public class Timetable {
         return id;
     }
 
-    public String getActivity() {
-        return activity;
-    }
 
     public String getClassroom() {
         return classroom;
@@ -90,9 +87,9 @@ public class Timetable {
         return endAtMinute;
     }
 
-    public Timetable(int id, String activity, String classroom, String description, LocalDate date, int startAtHour, int startAtMinute, int endAtHour, int endAtMinute) {
+    public Timetable(int id, SubjectModel subjectId, String classroom, String description, LocalDate date, int startAtHour, int startAtMinute, int endAtHour, int endAtMinute) {
         this.id = id;
-        this.activity = activity;
+        this.subjectId = subjectId;
         this.classroom = classroom;
         this.description = description;
         this.date = date;
@@ -100,5 +97,13 @@ public class Timetable {
         this.startAtMinute = startAtMinute;
         this.endAtHour = endAtHour;
         this.endAtMinute = endAtMinute;
+    }
+
+    public SubjectModel getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(SubjectModel subjectId) {
+        this.subjectId = subjectId;
     }
 }

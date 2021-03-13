@@ -164,7 +164,7 @@ public class DetailedTimetableController implements Initializable {
     }
 
     public void setTimetable(Timetable timetable) {
-        activity.setText(timetable.getActivity());
+        activity.setText(timetable.getSubjectId().getName());
         classroom.setText(timetable.getClassroom());
         description.setText(timetable.getDescription());
         date.setValue(timetable.getDate());

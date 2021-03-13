@@ -19,6 +19,7 @@ public class SqliteConnection {
         try {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection(connect_string);
+
         } catch (Exception e) {
             e.printStackTrace();
             return null;
