@@ -1,90 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXBadge?>
-<?import com.jfoenix.controls.JFXButton?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<GridPane fx:id="timetableFormRootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.NewTimeTableFormController">
-    <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="280.0" minWidth="10.0" prefWidth="101.0" />
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="503.0" minWidth="10.0" prefWidth="469.0" />
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-    </rowConstraints>
-    <children>
-        <Label text="Activity" />
-        <Label text="Classroom" GridPane.rowIndex="1" />
-        <Label text="Description" GridPane.rowIndex="2" />
-        <Label text="Date" GridPane.rowIndex="3" />
-        <Label text="Start At" GridPane.rowIndex="4" />
-        <Label text="End At" GridPane.rowIndex="5" />
-        <TextField fx:id="classroom" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <TextArea fx:id="description" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <DatePicker fx:id="date" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
-         <children>
-            <Button fx:id="cancelNewTimetableFormButton" cancelButton="true" mnemonicParsing="false" onAction="#cancelNewTimetableForm" text="Cancel">
-               <HBox.margin>
-                  <Insets right="15.0" />
-               </HBox.margin>
-            </Button>
-            <JFXButton fx:id="saveNewTimetableFormButtonsaveNewTimetableFormButton" buttonType="RAISED" onAction="#saveNewTimetableForm" style="-fx-background-color: #0d6efd#0d6efd;" text="Save" textFill="WHITE" />
-         </children>
-      </HBox>
-      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
-         <children>
-            <TextField fx:id="startAtHour" prefHeight="27.0" prefWidth="44.0" promptText="16">
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </TextField>
-            <Label text=":">
-               <HBox.margin>
-                  <Insets left="3.0" right="3.0" />
-               </HBox.margin>
-            </Label>
-            <TextField fx:id="startAtMinute" prefHeight="27.0" prefWidth="44.0" promptText="30" />
-         </children>
-      </HBox>
-      <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
-         <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="57.0" prefWidth="468.0">
-               <children>
-                  <TextField fx:id="endAtHour" prefHeight="27.0" prefWidth="44.0" promptText="17">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </TextField>
-                  <Label text=":">
-                     <HBox.margin>
-                        <Insets left="3.0" right="3.0" />
-                     </HBox.margin>
-                  </Label>
-                  <TextField fx:id="endAtMinute" prefHeight="27.0" prefWidth="44.0" promptText="30" />
-                  <JFXBadge />
-               </children>
-            </HBox>
-         </children>
-      </HBox>
-      <HBox fx:id="hBox10" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" />
-    </children>
-   <padding>
-      <Insets left="15.0" right="15.0" />
-   </padding>
-</GridPane>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="sample.NewTimetableFormController"
+            prefHeight="400.0" prefWidth="600.0">
+
+</AnchorPane>

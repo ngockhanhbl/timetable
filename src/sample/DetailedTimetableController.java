@@ -1,5 +1,7 @@
 package sample;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,10 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -21,9 +20,11 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.stage.Window;
+import javafx.util.StringConverter;
 
 import static sample.Util.checkValidInput;
 import static sample.Util.showSnackbarSuccess;
@@ -44,8 +45,7 @@ public class DetailedTimetableController implements Initializable {
 
     private int id;
 
-    @FXML
-    private TextField activity;
+    ComboBox<SubjectModel> comboBox = new ComboBox<>();
 
     @FXML
     private TextField classroom;
@@ -84,7 +84,7 @@ public class DetailedTimetableController implements Initializable {
     }
     public void updateDetailedTimetableButtonClick(ActionEvent e){
         boolean isValid = checkValidInput(
-                activity.getText(),
+                comboBox.getSelectionModel().getSelectedItem().getName(),
                 classroom.getText(),
                 date.getValue(),
                 startAtHour.getText(),
@@ -92,16 +92,19 @@ public class DetailedTimetableController implements Initializable {
                 endAtHour.getText(),
                 endAtMinute.getText()
         );
+
         if (isValid == true){
             Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
 
-            String updateQuery = "UPDATE timetable SET activity= ? , classroom= ? , description= ? , date= ? , startAtHour= ? , startAtMinute= ? , endAtHour= ? , endAtMinute= ?  WHERE id= ?";
+            String updateQuery = "UPDATE timetable SET subjectId= ? , classroom= ? , description= ? , date= ? , startAtHour= ? , startAtMinute= ? , endAtHour= ? , endAtMinute= ?  WHERE id= ?";
 
             Connection connection = SqliteConnection.getInstance().getConnection();
+            System.out.println("comboBox.getSelectionModel().getSelectedItem().getId()");
+            System.out.println(comboBox.getSelectionModel().getSelectedItem().getId());
 
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
-                preparedStatement.setString(1, activity.getText());
+                preparedStatement.setInt(1, comboBox.getSelectionModel().getSelectedItem().getId());
                 preparedStatement.setString(2, classroom.getText());
                 preparedStatement.setString(3, description.getText());
                 preparedStatement.setString(4, date.getValue().toString());
@@ -113,13 +116,14 @@ public class DetailedTimetableController implements Initializable {
 
                 int status = preparedStatement.executeUpdate();
 
+                System.out.println("status");
+                System.out.println(status);
+
                 if (status > 0) {
                     //close connection
                     connection.close();
                     // close modal
                     stage.close();
-
-
 
                 }
             }catch (SQLException throwable){
@@ -163,8 +167,29 @@ public class DetailedTimetableController implements Initializable {
         }
     }
 
-    public void setTimetable(Timetable timetable) {
-        activity.setText(timetable.getSubjectId().getName());
+    public void setTimetable(Timetable timetable, List<SubjectModel> subjects) {
+        ObservableList<SubjectModel> list = FXCollections.observableArrayList();
+        list.addAll(subjects);
+        StringConverter<SubjectModel> converter = new StringConverter<SubjectModel>() {
+            @Override
+            public String toString(SubjectModel object) {
+                return object.getName();
+            }
+
+            @Override
+            public SubjectModel fromString(String string) {
+                return comboBox.getItems().stream().filter(ap ->
+                        ap.getName().equals(string)).findFirst().orElse(null);
+//                return subjectId.getSelectionModel().getSelectedItem();
+            }
+        };
+        comboBox.setConverter(converter);
+        comboBox.setItems(list);
+
+        comboBox.getSelectionModel().select(timetable.getSubjectId());
+
+        detailedTimetableRootPane.add(comboBox, 1, 0);
+
         classroom.setText(timetable.getClassroom());
         description.setText(timetable.getDescription());
         date.setValue(timetable.getDate());

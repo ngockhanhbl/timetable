@@ -11,7 +11,7 @@
    <top>
       <HBox prefHeight="28.0" prefWidth="570.0" BorderPane.alignment="CENTER">
          <children>
-            <JFXButton fx:id="addButton" buttonType="RAISED" onAction="#addButtonClick" style="-fx-background-color: #4caf50#4caf50;" text="+ ADD" textFill="WHITE">
+            <JFXButton fx:id="addButton" buttonType="RAISED" onAction="#addButtonClick" style="-fx-background-color: #4caf50;" text="+ Add Schedule" textFill="WHITE">
                <font>
                   <Font size="14.0" />
                </font>
@@ -20,6 +20,14 @@
                <HBox.margin>
                   <Insets left="15.0" />
                </HBox.margin></Button>
+            <JFXButton fx:id="createTimetable" buttonType="RAISED" onAction="#createTimetableButtonClick" style="-fx-background-color: #2196F3;" text="Create Timetable" textFill="WHITE">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="15.0" />
+               </HBox.margin>
+            </JFXButton>
          </children>
          <BorderPane.margin>
             <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />

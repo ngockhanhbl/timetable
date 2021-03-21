@@ -19,6 +19,7 @@ import jfxtras.icalendarfx.VCalendar;
 import jfxtras.scene.control.CalendarPicker;
 import jfxtras.scene.control.agenda.Agenda;
 import jfxtras.scene.control.agenda.icalendar.ICalendarAgenda;
+import org.controlsfx.dialog.Wizard;
 
 import java.io.IOException;
 import java.net.URL;
@@ -34,6 +35,9 @@ import static sample.Util.*;
 import static sample.Util.getListOfWeek;
 
 public class Controller implements Initializable {
+    List<SubjectModel>  subjects;
+
+    @FXML
     public Button addButton;
 
     @FXML
@@ -43,7 +47,24 @@ public class Controller implements Initializable {
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
 
         FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("new_schedule_form.fxml"));
+        Parent newScheduleFormParent = fxmlLoader.load();
+        Scene scene = new Scene(newScheduleFormParent);
+
+        Stage dialog = new Stage();
+        dialog.setScene(scene);
+        dialog.setTitle("New Schedule Form");
+        dialog.initOwner(stage);
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.showAndWait();
+    }
+
+    public void createTimetableButtonClick(ActionEvent e) throws IOException {
+        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("new_timetable_form.fxml"));
+
         Parent newTimetableFormParent = fxmlLoader.load();
         Scene scene = new Scene(newTimetableFormParent);
 
@@ -51,9 +72,11 @@ public class Controller implements Initializable {
         dialog.setScene(scene);
         dialog.setTitle("New Timetable Form");
         dialog.initOwner(stage);
-        dialog.initModality(Modality.APPLICATION_MODAL);
-        dialog.showAndWait();
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.show();
+
     }
+
 
     public void loadDataButtonClick(ActionEvent e) throws IOException {
         Agenda agenda = (Agenda) rootPane.getCenter();
@@ -76,7 +99,7 @@ public class Controller implements Initializable {
                             .withSummary(item.getSubjectId().getName())
                             .withDescription(item.getDescription())
                             .withLocation(item.getClassroom())
-                            .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20))) // you should use a map of AppointmentGroups
+                            .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20)).withDescription(String.valueOf(item.getId()))) // you should use a map of AppointmentGroups
             );
         }
 
@@ -84,6 +107,12 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        try {
+            subjects = getSubjects();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
         CalendarPicker calendarPicker = new CalendarPicker();
         Agenda agenda = new Agenda();
         agenda.setAllowDragging(false);
@@ -133,13 +162,10 @@ public class Controller implements Initializable {
                 try {
                     selected = parseAppointmentToTimetable(appointment);
                 } catch (SQLException throwables) {
-                    System.out.println("throwables");
                     throwables.printStackTrace();
                 }
-                System.out.println("selected");
-                System.out.println(selected);
 
-                detailedTimetableController.setTimetable(selected);
+                detailedTimetableController.setTimetable(selected, subjects);
 
                 Scene scene = new Scene(detailedTimetableParent);
                 Stage dialog = new Stage();
@@ -203,7 +229,7 @@ public class Controller implements Initializable {
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
-                    detailedTimetableController.setTimetable(selected);
+                    detailedTimetableController.setTimetable(selected, subjects);
 
                     Scene scene = new Scene(detailedTimetableParent);
                     Stage dialog = new Stage();
@@ -227,8 +253,6 @@ public class Controller implements Initializable {
         PreparedStatement preparedStatement;
         ResultSet resultSet;
         var sql = String.format(
-//                "SELECT * FROM timetable  WHERE date IN (%s)",
-
                 "SELECT timetable.*, subject.*\n" +
                         "FROM timetable\n" +
                         "JOIN subject ON subject.id = timetable.subjectId \n" +

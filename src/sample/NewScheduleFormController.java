@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 
 import static sample.Util.*;
 
-public class NewTimeTableFormController implements Initializable {
+public class NewScheduleFormController implements Initializable {
     @FXML
     private Button cancelNewTimetableFormButton;
 
@@ -113,8 +113,7 @@ public class NewTimeTableFormController implements Initializable {
             int endAtHourData = Integer.parseInt(endAtHour.getText());
             int endAtMinuteData = Integer.parseInt(endAtMinute.getText());
 
-
-            String mutation = "INSERT INTO timetable (subjectId, classroom, description, date, startAtHour, startAtMinute, endAtHour, endAtMinute)" + " VALUES('"+activityData+"', '"+classroomData+"','"+descriptionData+"','"+dateData+"', '"+startAtHourData+"', '"+startAtMinuteData+"', '"+endAtHourData+"', '"+endAtMinuteData+"' )";
+            String mutation = "INSERT INTO schedule (subjectId, classroom, description, date, startAtHour, startAtMinute, endAtHour, endAtMinute)" + " VALUES('"+activityData+"', '"+classroomData+"','"+descriptionData+"','"+dateData+"', '"+startAtHourData+"', '"+startAtMinuteData+"', '"+endAtHourData+"', '"+endAtMinuteData+"' )";
             System.out.println(mutation);
             try {
                 Statement statement = connection.createStatement();
@@ -200,6 +199,7 @@ public class NewTimeTableFormController implements Initializable {
 //                return subjectId.getSelectionModel().getSelectedItem();
                 }
             };
+
             comboBox.setConverter(converter);
             comboBox.setItems(list);
             comboBox.getSelectionModel().selectFirst();

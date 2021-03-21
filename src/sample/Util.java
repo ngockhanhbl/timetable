@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Util {
     public static int getRandomNumberInRange(int min, int max) {
@@ -276,6 +277,46 @@ public class Util {
         return subjectModelList;
     }
 
+
+    public static List<ScheduleModel> getSchedules(List<String> WeekDateList) throws SQLException {
+        List<ScheduleModel> scheduleList = FXCollections.observableArrayList();
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+        var sql = String.format(
+                "SELECT schedule.*, subject.*\n" +
+                        "FROM schedule\n" +
+                        "JOIN subject ON subject.id = schedule.subjectId \n" +
+                        "where date IN (%s)",
+
+                WeekDateList.stream()
+                        .collect(Collectors.joining(", ")));
+
+        Connection connection = SqliteConnection.getInstance().getConnection();
+        preparedStatement = connection.prepareStatement(sql);
+
+        resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()){
+            ScheduleModel newSchedule = new ScheduleModel(
+                    Integer.parseInt(resultSet.getString(1)),
+                    new SubjectModel(
+                            resultSet.getInt(10),
+                            resultSet.getString(11)
+                    ),
+                    resultSet.getString(3),
+                    resultSet.getString(4),
+                    LocalDate.parse(resultSet.getString(5)),
+                    resultSet.getInt(6),
+                    resultSet.getInt(7),
+                    resultSet.getInt(8),
+                    resultSet.getInt(9)
+            );
+            scheduleList.add(newSchedule);
+        }
+
+        return scheduleList;
+    }
 
 }
 
