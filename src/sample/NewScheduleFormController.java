@@ -126,31 +126,6 @@ public class NewScheduleFormController implements Initializable {
 
                     //show Snackbar
                     showSnackbarSuccess(timetableFormRootPane, "Timetable successfully created");
-
-                    // add to agenda
-
-//                    FXMLLoader fxmlLoader = new FXMLLoader();
-//                    fxmlLoader.setLocation(getClass().getResource("sample.fxml"));
-//                    Parent rootPane = fxmlLoader.load();
-//                    Controller controller = fxmlLoader.getController();
-//                    Agenda agenda = (Agenda) controller.getRootPane().getCenter();
-//                    System.out.println(agenda.appointments().stream().sorted());
-//                    agenda.appointments().addAll(
-//                            new Agenda.AppointmentImplLocal()
-//                                    .withStartLocalDateTime(LocalDate.now().atTime(4, 00))
-//                                    .withEndLocalDateTime(LocalDate.now().atTime(5, 30))
-//                                    .withSummary("TEST Ne")
-//                                    .withDescription("It's time")
-//                                    .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group1"))
-//
-////                            new Agenda.AppointmentImplLocal()
-////                                    .withStartLocalDateTime(date.getValue().atTime(Integer.valueOf(startAtHour.getText()), Integer.valueOf(startAtMinute.getText())))
-////                                    .withEndLocalDateTime(date.getValue().atTime(Integer.valueOf(endAtHour.getText()), Integer.valueOf(endAtMinute.getText())))
-////                                    .withSummary(activity.getText())
-////                                    .withDescription(description.getText())
-////                                    .withLocation(classroom.getText())
-////                                    .withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group" + getRandomNumberInRange(0, 20)).withDescription("100"))
-//                    );
                 }
             }catch (Exception exception){
                 exception.printStackTrace();

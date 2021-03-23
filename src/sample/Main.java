@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,8 @@ public class Main extends Application {
         List<Integer> x2 = new ArrayList<>();
         List<Integer> x3 = new ArrayList<>();
 
+        List<Integer> x4 = new ArrayList<>();
+
         x1.add(0);
         x1.add(1);
 
@@ -37,24 +40,30 @@ public class Main extends Application {
         x3.add(4);
         x3.add(5);
 
-        x.add(x1);x.add(x2);x.add(x3);
+        x4.add(6);
+        x4.add(7);
 
+        x.add(x1);
+        x.add(x2);
+        x.add(x3);
+        x.add(x4);
         List<List<Integer>> myData = new ArrayList<>();
-        int loopTotal = 8;
-        int currentIndexOfArray = 0;
-        int currentIndexArrayOfArray = 2;
+        int loopTotal = 16;
 
-        int lengthOfList = 3;
+        int lengthOfList = 4;
+
+
 
         List<Integer> depthIndex = new ArrayList<>();
         for (var i = 0; i< lengthOfList; i++){
             depthIndex.add(0);
         }
 
+
         for (var i = 0; i< loopTotal; i++){
             List<Integer> temporaryList = new ArrayList<Integer>();
             System.out.println("\n\n\n" +"i: " + i );
-            System.out.println("depthIndex.get(123): " + depthIndex.get(0) + " 1: " + depthIndex.get(1) + " 2: " + depthIndex.get(2));
+            System.out.println("depthIndex.get(123): 0: " + depthIndex.get(0) + "  1: " + depthIndex.get(1) +  "  2: " + depthIndex.get(2) +  "  3: " + depthIndex.get(3));
             for(int j = 0; j < lengthOfList ; j++){
                 System.out.println("j: " + j + "\n");
                 var data = x.get(j).get(depthIndex.get(j));
@@ -71,29 +80,41 @@ public class Main extends Application {
 
                     int k = lengthOfList - 1;
                     while (true){
-                        if (k <= 0){
+                        if (k < 0){
                             System.out.println("out of array");
-                            return;
+                            break;
                         }
                         System.out.println("depthIndex.get(k): " + depthIndex.get(k));
                         System.out.println("x.get(k).size(): " + x.get(k).size());
 
-                        if (depthIndex.get(k) == x.get(k).size() || ( (k == lengthOfList - 1) && depthIndex.get(k) + 1 == x.get(k).size())  ){
+                        if (depthIndex.get(k) == x.get(k).size()  ){
                             //nothing do, just minus k below
                             k--;
-                        } else {
+                        }else if (  (k == lengthOfList - 1) && depthIndex.get(k) + 1 == x.get(k).size() ) {
+                            k--;
+                            while (k != -1 && depthIndex.get(k) + 1 == x.get(k).size()){
+                                System.out.println("k in while: " + k);
+                                k--;
+                            }
+                            System.out.println("k out :  " + k);
+                        }
+                        else {
                             int newDepthIndex = depthIndex.get(k) + 1;
                             depthIndex.set(k, newDepthIndex);
 
                             System.out.println("newDepthIndex: " + newDepthIndex + " k: " + k);
-                            System.out.println("tai vi tri depthindex: " + k + " voi new value la: : " + newDepthIndex);
+//                            System.out.println("tai vi tri depthindex: " + k + " voi new value la: : " + newDepthIndex);
                             boolean isSet = false;
                             while (true){
-                                System.out.println("depthIndex.get(k) " + depthIndex.get(k));
-                                if (depthIndex.get(k) == x.get(k).size()){
+//                                System.out.println("depthIndex.get(k) " + depthIndex.get(k));
+                                if (k == -1){
+                                    break;
+                                }
+                                if (depthIndex.get(k) == x.get(k).size() ){
                                     System.out.println(depthIndex.get(k) + "  hihihi  " + x.get(k).size());
                                     System.out.println(x.get(k-1).size()  + "---" + depthIndex.get(k - 1));
                                     k--;
+                                    System.out.println("K NENE " + k);
 
                                     isSet = true;
                                 }else {
@@ -101,8 +122,8 @@ public class Main extends Application {
                                 }
                             }
                             System.out.println("Is Set = " + isSet);
-                            if (isSet){
-                                System.out.println(depthIndex.get(k) + 1);
+                            if (isSet && k != -1){
+//                                System.out.println(depthIndex.get(k) + 1);
                                 depthIndex.set(k, depthIndex.get(k) + 1);
                             }
 
@@ -113,9 +134,9 @@ public class Main extends Application {
 
                             //reset for children
                             System.out.println("k: "+ k +" m: "+ (lengthOfList - 1));
-                            for(int m = lengthOfList - 1; m > k ; m--){
+                            for(int m = lengthOfList - 1; m > k && k != -1; m--){
                                 depthIndex.set(m, 0);
-                                System.out.println(m + " depthIndex.get(m, 0): " + depthIndex.get(m));
+//                                System.out.println(m + " depthIndex.get(m, 0): " + depthIndex.get(m));
                             }
 
                             System.out.println("break");
@@ -124,41 +145,6 @@ public class Main extends Application {
                     }
 
                     System.out.println("-----------------------------------------------");
-
-
-//                    if (depthIndex.get(lengthOfList - 1)  == x.get(lengthOfList - 1).size() ){
-//                        int k = lengthOfList - 2;
-//                        System.out.println("k: " + k);
-//                        while (true){
-//                            if (k <= 0){
-//                                System.out.println("out of array");
-//                                return;
-//                            }
-//                            System.out.println("depthIndex.get(k): " + depthIndex.get(k));
-//                            System.out.println("x.get(k).size(): " + x.get(k).size());
-//                            if (depthIndex.get(k) == x.get(k).size()){
-//                                //nothing do, just minus k below
-//                                k--;
-//                            }else {
-//                                int newDepthIndex = depthIndex.get(k) + 1;
-//                                System.out.println("newDepthIndex: " + newDepthIndex);
-//                                depthIndex.set(k, newDepthIndex);
-//
-//                                //reset for children
-//                                for(int m = lengthOfList - 1; m > k ; m++){
-//                                    depthIndex.set(m, 0);
-//                                    return;
-//                                }
-//                            }
-//                        }
-//                    }else {
-//                        int newDepthIndex = depthIndex.get(lengthOfList - 1) + 1;
-//                        depthIndex.set(lengthOfList - 1, newDepthIndex);
-//                        System.out.println("----");
-//                        System.out.println("lengthOfList - 1: " + (lengthOfList - 1) + " newDepthIndex: " + newDepthIndex);
-//                        System.out.println("*****");
-//                    }
-
                 }
             }
             System.out.println("temporaryList: " + temporaryList);

@@ -8,10 +8,7 @@ import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import jfxtras.scene.control.agenda.Agenda;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -254,6 +251,26 @@ public class Util {
         return true;
     }
 
+    public static void addTimetables(List<ScheduleModel> list) throws SQLException {
+        if (list == null || list.size() == 0) return;
+        Connection connection = SqliteConnection.getInstance().getConnection();
+        Statement statement = connection.createStatement();
+        for (var item: list){
+            int activityData = item.getSubjectId().getId();
+            String classroomData = item.getClassroom();
+            String descriptionData = item.getDescription();
+            LocalDate dateData = item.getDate();
+            int startAtHourData = item.getStartAtHour();
+            int startAtMinuteData = item.getStartAtMinute();
+            int endAtHourData = item.getEndAtHour();
+            int endAtMinuteData = item.getEndAtMinute();
+
+            String mutation = "INSERT INTO timetable (subjectId, classroom, description, date, startAtHour, startAtMinute, endAtHour, endAtMinute)" + " VALUES('"+activityData+"', '"+classroomData+"','"+descriptionData+"','"+dateData+"', '"+startAtHourData+"', '"+startAtMinuteData+"', '"+endAtHourData+"', '"+endAtMinuteData+"' )";
+            int status = statement.executeUpdate(mutation);
+        }
+    }
+
+
 
     public static List<SubjectModel> getSubjects() throws SQLException {
         List<SubjectModel> subjectModelList = FXCollections.observableArrayList();
@@ -316,6 +333,25 @@ public class Util {
         }
 
         return scheduleList;
+    }
+
+    public static boolean isOverlaps (int startAtHour1, int startAtMinute1, int endAtHour1, int endAtMinute1, int startAtHour2, int startAtMinute2, int endAtHour2, int endAtMinute2){
+        LocalTime startA = LocalTime.of( startAtHour1 , startAtMinute1 );
+        LocalTime stopA = LocalTime.of( endAtHour1 , endAtMinute1 );
+
+        LocalTime startB = LocalTime.of( startAtHour2 , startAtMinute2 );
+        LocalTime stop2B = LocalTime.of( endAtHour2 , endAtMinute2 );
+
+        Boolean validA = ( ! startA.isAfter( stopA ) ) ;
+        Boolean validB = ( ! startB.isAfter( stop2B ) ) ;
+
+        Boolean overlaps = (
+                ( startA.isBefore( stop2B ) )
+                        &&
+                        ( stopA.isAfter( startB ) )
+        ) ;
+
+        return overlaps;
     }
 
 }

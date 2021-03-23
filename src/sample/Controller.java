@@ -60,20 +60,40 @@ public class Controller implements Initializable {
     }
 
     public void createTimetableButtonClick(ActionEvent e) throws IOException {
+        Agenda agenda  = (Agenda) rootPane.getCenter();
+
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
 
         FXMLLoader fxmlLoader = new FXMLLoader();
+
         fxmlLoader.setLocation(getClass().getResource("new_timetable_form.fxml"));
 
         Parent newTimetableFormParent = fxmlLoader.load();
+
+
+        NewTimetableFormController newTimetableFormController = fxmlLoader.getController();
+
+        System.out.println("Set new Localdatetime");
+        System.out.println(agenda.getDisplayedLocalDateTime());
+
+        newTimetableFormController.setSelectedLocalDate(agenda.getDisplayedLocalDateTime());
+
+        try {
+            newTimetableFormController.initWizard();
+        } catch (SQLException | IOException throwables) {
+            throwables.printStackTrace();
+        }
+
         Scene scene = new Scene(newTimetableFormParent);
 
         Stage dialog = new Stage();
         dialog.setScene(scene);
         dialog.setTitle("New Timetable Form");
         dialog.initOwner(stage);
+        dialog.setWidth(650);
+        dialog.setHeight(500);
         dialog.initModality(Modality.WINDOW_MODAL);
-        dialog.show();
+        dialog.showAndWait();
 
     }
 
@@ -115,6 +135,7 @@ public class Controller implements Initializable {
 
         CalendarPicker calendarPicker = new CalendarPicker();
         Agenda agenda = new Agenda();
+        agenda.setId("myAgenda");
         agenda.setAllowDragging(false);
         rootPane.setCenter(agenda);
         rootPane.setRight(calendarPicker);
@@ -183,7 +204,15 @@ public class Controller implements Initializable {
             Date date = calendarRange.getTime();
             LocalDateTime localDateTime = LocalDateTime.ofInstant(date.toInstant(),
                     ZoneId.systemDefault());
+
             agenda.setDisplayedLocalDateTime(localDateTime);
+            agenda.withDisplayedLocalDateTime(localDateTime);
+
+            System.out.println("Khanh oi");
+
+            System.out.println(agenda.localDateTimeRangeCallbackProperty());
+
+
             List<Timetable> _timetableList = null;
 
             List<String> _weekDateList = getListOfWeek(agenda.getDisplayedLocalDateTime());
@@ -297,6 +326,7 @@ public class Controller implements Initializable {
     public void setRootPane(BorderPane rootPane) {
         this.rootPane = rootPane;
     }
+
 
 }
 
