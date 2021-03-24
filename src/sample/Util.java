@@ -294,6 +294,36 @@ public class Util {
         return subjectModelList;
     }
 
+    public static void addSubject(SubjectModel subject) throws SQLException {
+
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        String sql = " INSERT INTO subject (subject)"
+                + " VALUES (?)";
+
+        Connection connection = SqliteConnection.getInstance().getConnection();
+        preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString (1, subject.getName());
+
+        preparedStatement.execute();
+        connection.close();
+    }
+    public static void editSubject(SubjectModel oldSubject, String newSubjectName) throws SQLException {
+
+        PreparedStatement preparedStatement;
+
+
+        String sql = "UPDATE subject SET subject= ? WHERE subject= ?";
+
+        Connection connection = SqliteConnection.getInstance().getConnection();
+        preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString (1, newSubjectName);
+        preparedStatement.setString (2, oldSubject.getName());
+        preparedStatement.execute();
+        connection.close();
+    }
+
 
     public static List<ScheduleModel> getSchedules(List<String> WeekDateList) throws SQLException {
         List<ScheduleModel> scheduleList = FXCollections.observableArrayList();

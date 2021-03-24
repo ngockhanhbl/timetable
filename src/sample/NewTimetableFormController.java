@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -65,12 +66,13 @@ public class NewTimetableFormController implements Initializable {
     TableColumn<ScoreModel, Double> scoreColumn = createTableColumn("score", "Score");
     TableColumn<ScoreModel, String> timetableColumn = createTableColumn("timetable", "Timetable");
     BorderPane borderPane = new BorderPane();
-
+    List<ScheduleModel> selectedSchedules = new ArrayList<>();
 
     public void initWizard() throws SQLException, IOException {
         Wizard wizard = new Wizard();
 
         wizard.setTitle("Generate Timetable - Wizard View");
+
 
 
         // --- page 1
@@ -125,6 +127,7 @@ public class NewTimetableFormController implements Initializable {
         final WizardPane page2 = new WizardPane() {
             @Override
             public void onEnteringPage(Wizard wizard) {
+
                 List<String> selectedSubject = new ArrayList<>();
                 for (var item: vbox.getChildren()){
                     CheckBox checkboxItem = (CheckBox) item;
@@ -134,14 +137,14 @@ public class NewTimetableFormController implements Initializable {
                 }
 
                 //schedule after selected subjects
-                List<ScheduleModel> selectedSchedules = new ArrayList<>();
+
                 for (var item: schedules){
                     if (selectedSubject.contains(item.getSubjectId().getName())){
                         selectedSchedules.add(item);
                     }
                 }
 
-                if (selectedSubject == null){
+                if (selectedSubject == null ){
                     setContentText("the subject list is empty. Please select a subject to create a timetable\n ");
                     return;
                 }else {
@@ -159,6 +162,16 @@ public class NewTimetableFormController implements Initializable {
         final WizardPane page3 = new WizardPane() {
             @Override
             public void onEnteringPage(Wizard wizard) {
+                ObservableList<ButtonType> list = getButtonTypes();
+
+                for (ButtonType type : list) {
+                    if (type.getButtonData().equals(ButtonBar.ButtonData.FINISH)) {
+                        Node prev = lookupButton(type);
+                        prev.visibleProperty().setValue(Boolean.FALSE);
+
+                    }
+                }
+
                 List<List<ScheduleModel>> data = getData();
                 List<ScoreModel> scoreModels = new ArrayList<>();
                 for(var item: data){
@@ -193,6 +206,9 @@ public class NewTimetableFormController implements Initializable {
 
                 Button generateBtn = new Button();
                 generateBtn.setId("generateBtn");
+                if (selectedSchedules.size() <=0){
+                    generateBtn.setDisable(true);
+                }
                 generateBtn.setPadding(
                         new Insets(10,10,10,10)
                 );
@@ -233,23 +249,6 @@ public class NewTimetableFormController implements Initializable {
 
 
 
-
-
-
-//        // --- page 3
-//        WizardPane page3 = new WizardPane();
-//        page3.setHeaderText("Goodbye!");
-//        page3.setContentText("Page 3, with extra 'help' button!");
-//
-//        ButtonType helpDialogButton = new ButtonType("Help", ButtonBar.ButtonData.HELP_2);
-//        page3.getButtonTypes().add(helpDialogButton);
-//        Button helpButton = (Button) page3.lookupButton(helpDialogButton);
-//        helpButton.addEventFilter(ActionEvent.ACTION, actionEvent -> {
-//            actionEvent.consume(); // stop hello.dialog from closing
-//            System.out.println("Help clicked!");
-//        });
-
-
         wizard.setFlow(new Wizard.LinearFlow(page1, page2, page3));
 
         System.out.println("page1: " + page1);
@@ -259,6 +258,7 @@ public class NewTimetableFormController implements Initializable {
         // show wizard and wait for response
         wizard.showAndWait().ifPresent(result -> {
             if (result == ButtonType.FINISH) {
+
                 System.out.println("Wizard finished, settings: " + wizard.getSettings());
             }
         });

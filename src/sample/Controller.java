@@ -87,12 +87,34 @@ public class Controller implements Initializable {
         Scene scene = new Scene(newTimetableFormParent);
 
         Stage dialog = new Stage();
+
         dialog.setScene(scene);
         dialog.setTitle("New Timetable Form");
         dialog.initOwner(stage);
         dialog.setWidth(650);
         dialog.setHeight(500);
-        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.showAndWait();
+
+
+
+    }
+
+    public void manageSubjectClick(ActionEvent e) throws IOException, SQLException {
+        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("subject_form.fxml"));
+        Parent newTimetableFormParent = fxmlLoader.load();
+
+        Scene scene = new Scene(newTimetableFormParent);
+        Stage dialog = new Stage();
+
+        dialog.setScene(scene);
+        dialog.setTitle("Subject Management");
+        dialog.initOwner(stage);
+        dialog.setWidth(650);
+        dialog.setHeight(500);
+        dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.showAndWait();
 
     }

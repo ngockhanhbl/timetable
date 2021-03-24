@@ -27,4 +27,7 @@ public class SubjectModel {
         this.name = name;
     }
 
+    public SubjectModel() {
+    }
+
 }
